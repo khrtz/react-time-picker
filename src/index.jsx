@@ -200,6 +200,10 @@ module.exports = React.createClass({
 	},
 
 	onArrowMouseDown: function(props, dir, name, event){
+		// Fixed though there was a bat when right-clicked long pressed, FYI: PullRequest #2.
+		if (event.button === 2) {
+			return;
+		}
 
 		if (name == 'meridian'){
 			this.onArrowMeridianAction(props, dir, name)
