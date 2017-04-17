@@ -23,13 +23,15 @@ var formatTime    = require('./formatTime')
 
 function identity(v){ return v }
 
-export default var ____Class0=React.Component;for(var ____Class0____Key in ____Class0){if(____Class0.hasOwnProperty(____Class0____Key)){TimePicker[____Class0____Key]=____Class0[____Class0____Key];}}var ____SuperProtoOf____Class0=____Class0===null?null:____Class0.prototype;TimePicker.prototype=Object.create(____SuperProtoOf____Class0);TimePicker.prototype.constructor=TimePicker;TimePicker.__superConstructor__=____Class0;function TimePicker(){if(____Class0!==null){____Class0.apply(this,arguments);}}
+module.exports = React.createClass({
 
-	TimePicker.prototype.componentWillUnmount=function() {
+	displayName: 'ReactTimePicker',
+
+	componentWillUnmount: function(){
 		this.stopInterval()
-	};
+	},
 
-	TimePicker.prototype.getInitialState=function() {
+	getInitialState: function(){
 		return {
 			defaultValue: this.props.defaultValue,
 			focused: {
@@ -45,9 +47,9 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 				meridian: null
 			}
 		}
-	};
+	},
 
-	TimePicker.prototype.getDefaultProps=function() {
+	getDefaultProps: function() {
 		return {
 			normalizeStyle: true,
 			stopChangePropagation: true,
@@ -144,13 +146,13 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 
 			timeToString: formatTime
 		}
-	};
+	},
 
-	TimePicker.prototype.normalize=function(style) {
+	normalize: function(style) {
 		return normalize(style)
-	};
+	},
 
-	TimePicker.prototype.render=function() {
+	render: function(){
 		var props = this.prepareProps(this.props, this.state)
 
 		if (!props.normalizeStyle){
@@ -162,24 +164,24 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 		var second   = this.renderSecond(props)
 		var meridian = this.renderMeridian(props)
 
-		var separator       = props.separator || React.createElement("span", {style: props.separatorStyle}, WHITESPACE + ':' + WHITESPACE)
+		var separator       = props.separator || <span style={props.separatorStyle}>{WHITESPACE + ':' + WHITESPACE}</span>
 		var hourSeparator   = hour && (minute || second || meridian)? props.hourSeparator || separator: null
 		var minuteSeparator = minute && (second || meridian)? props.minuteSeparator || separator: null
 		var secondSeparator = (second && meridian)? props.secondSeparator || separator: null
 
 
-		return React.createElement("div", React.__spread({},  props), 
-			hour, 
-			hourSeparator, 
-			minute, 
-			minuteSeparator, 
-			second, 
-			secondSeparator, 
-			meridian
-		)
-	};
+		return <div {...props}>
+			{hour}
+			{hourSeparator}
+			{minute}
+			{minuteSeparator}
+			{second}
+			{secondSeparator}
+			{meridian}
+		</div>
+	},
 
-	TimePicker.prototype.onArrowMouseEnter=function(props, dir, name, event) {
+	onArrowMouseEnter: function(props, dir, name, event) {
 		var overArrow = this.state.overArrow
 
 		Object.keys(overArrow).forEach(function(key){
@@ -189,15 +191,16 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 		overArrow[name] = dir
 
 		this.setState({})
-	};
+	},
 
-	TimePicker.prototype.onArrowMouseLeave=function(props, dir, name, event) {
+	onArrowMouseLeave: function(props, dir, name, event) {
 		this.state.overArrow[name] = null
 
 		this.setState({})
-	};
+	},
 
-	TimePicker.prototype.onArrowMouseDown=function(props, dir, name, event) {
+	onArrowMouseDown: function(props, dir, name, event){
+
 		if (name == 'meridian'){
 			this.onArrowMeridianAction(props, dir, name)
 			return
@@ -217,29 +220,29 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 		this.timeoutId = setTimeout(function(){
 			this.startInterval(props, dir, name)
 		}.bind(this), props.stepDelay)
-	};
+	},
 
-	TimePicker.prototype.onWindowClick=function(){
+	onWindowClick: function(){
 		this.stopInterval()
-	};
+	},
 
-	TimePicker.prototype.stopInterval=function() {
+	stopInterval: function(){
 		clearTimeout(this.timeoutId)
 		clearInterval(this.intervalId)
-	};
+	},
 
-	TimePicker.prototype.startInterval=function(props, dir, name) {
-		this.intervalId = setInterval(function() {
+	startInterval: function(props, dir, name){
+		this.intervalId = setInterval(function(){
 			this.onArrowAction(props, dir, name)
 		}.bind(this), props.stepDelay)
-	};
+	},
 
-	TimePicker.prototype.onMeridianInputMouseDown=function(props, event){
+	onMeridianInputMouseDown: function(props, event){
 		event.preventDefault()
 		this.onArrowMeridianAction(props, 1, 'meridian')
-	};
+	},
 
-	TimePicker.prototype.onArrowMeridianAction=function(props, dir, name) {
+	onArrowMeridianAction: function(props, dir, name){
 		var currentMeridian = this.time.meridian
 		var lowercase = currentMeridian == 'am' || currentMeridian == 'pm'
 
@@ -249,9 +252,10 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 							currentMeridian == 'AM'? 'PM': 'AM'
 
 		this.updateValue(name, newValue)
-	};
+	},
 
-	TimePicker.prototype.onArrowAction=function(props, dir, name) {
+	onArrowAction: function(props, dir, name) {
+
 		var dirName = dir == 1? 'Up': 'Down'
 		var methodName = 'onArrow' + dirName + toUpperFirst(name) + 'Action'
 
@@ -266,9 +270,9 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 		}
 
 		this.incValue(props, name, dir)
-	};
+	},
 
-	TimePicker.prototype.incValue=function(props, name, dir) {
+	incValue: function(props, name, dir){
 		dir = dir || 0
 
 		var step     = props[name + 'Step'] || props.step
@@ -279,13 +283,13 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 
 		// this.setValue(time)
 		this.updateValue(name, newValue)
-	};
+	},
 
-	TimePicker.prototype.updateValue=function(name, newValue, config) {
+	updateValue: function(name, newValue, config){
 		this.setValue(this.updateTime(name, newValue, config))
-	};
+	},
 
-	TimePicker.prototype.updateTime=function(name, newValue, config) {
+	updateTime: function(name, newValue, config){
 		config = config || {}
 		config.overflowHourToMeridian = this.props.overflowHourToMeridian
 
@@ -294,19 +298,20 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 		time = updateTime(time, name, newValue, config)
 
 		return this.time = time
-	};
+	},
 
-	TimePicker.prototype.setValue=function(time) {
-		if (this.props.value == null) {
+	setValue: function(time){
+
+		if (this.props.value == null){
 			this.setState({
 				defaultValue: time
 			})
 		}
 
 		;(this.props.onChange || emptyFn)(this.props.timeToString(time, this.props.format), assign({}, time))
-	};
+	},
 
-	TimePicker.prototype.format=function(props, name, value) {
+	format: function(props, name, value){
 		var renderFn
 
 		if (arguments.length < 3){
@@ -335,9 +340,9 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 		}
 
 		return value
-	};
+	},
 
-	TimePicker.prototype.renderBox=function(props, name) {
+	renderBox: function(props, name){
 		var state = this.state
 		var style      = props[name + 'Style']
 		var inputStyle = props[name + 'InputStyle']
@@ -444,14 +449,14 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 		}
 
 
-		return React.createElement("div", {style: style}, 
-			arrowUp, 
-			input, 
-			arrowDown
-		)
-	};
+		return <div style={style}>
+			{arrowUp}
+			{input}
+			{arrowDown}
+		</div>
+	},
 
-	TimePicker.prototype.handleInputFocus=function(props, name, event) {
+	handleInputFocus: function(props, name, event){
 		var focused = this.state.focused
 
 		focused[name] = {
@@ -461,9 +466,9 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 		this.stopInterval()
 
 		this.setState({})
-	};
+	},
 
-	TimePicker.prototype.handleInputBlur=function(props, name, event) {
+	handleInputBlur: function(props, name, event){
 
 		this.state.focused[name] = null
 		this.setState({})
@@ -474,18 +479,18 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 		this.updateValue(name, value, {
 			clamp: props.clamp
 		})
-	};
+	},
 
-	TimePicker.prototype.handleInputChange=function(props, name, event) {
+	handleInputChange: function(props, name, event){
 		if (this.state.focused[name]){
 			this.state.focused[name].value = event.target.value
 		}
 
 		this.setState({})
 		props.stopChangePropagation && event.stopPropagation()
-  };
+  },
 
-  TimePicker.prototype.handleInputKeyUp=function(props, name, event) {
+  handleInputKeyUp: function(props, name, event){
     if (event.key === 'ArrowDown') {
       this.incValue(props, name, -1);
     }
@@ -493,9 +498,9 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
       this.incValue(props, name, 1);
     }
     this.setState({focused: {}})
-  };
+  },
 
-	TimePicker.prototype.getTime=function() {
+	getTime: function(){
 		var strict = this.props.strict
 
 		var formatInfo = this.formatInfo = getFormatInfo(this.props.format)
@@ -508,9 +513,9 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 			second  : formatInfo.second,
 			meridian: formatInfo.meridian
 		})
-	};
+	},
 
-	TimePicker.prototype.prepareTime=function(props, state) {
+	prepareTime: function(props, state) {
 		var timeValue  = this.getTime()
 		var formatInfo = this.props.format?
 							this.formatInfo:
@@ -529,48 +534,48 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 								timeValue.meridian != null
 
 		return timeValue
-	};
+	},
 
-	TimePicker.prototype.getValue=function() {
+	getValue: function() {
 	    var value = this.props.value == null?
 	                    this.state.defaultValue:
 	                    this.props.value
 
 	    return value
-	};
+	},
 
-	TimePicker.prototype.renderHour=function(props) {
+	renderHour: function(props) {
 		return this.renderBox(props, 'hour')
-	};
+	},
 
-	TimePicker.prototype.renderMinute=function(props) {
+	renderMinute: function(props) {
 		if (props.showMinute){
 			return this.renderBox(props, 'minute')
 		}
-	};
+	},
 
-	TimePicker.prototype.renderSecond=function(props) {
+	renderSecond: function(props) {
 		if (props.showSecond){
 			return this.renderBox(props, 'second')
 		}
-	};
+	},
 
-	TimePicker.prototype.renderMeridian=function(props) {
+	renderMeridian: function(props) {
 		if (props.withMeridian){
 			return this.renderBox(props, 'meridian')
 		}
-	};
+	},
 
-	TimePicker.prototype.prepareProps=function(thisProps, state) {
+	prepareProps: function(thisProps, state) {
 		var props = assign({}, thisProps)
 
 		this.time = props.time = this.prepareTime(props, state)
 		this.prepareStyles(props, state)
 
 		return props
-	};
+	},
 
-	TimePicker.prototype.prepareStyles=function(props, state) {
+	prepareStyles: function(props, state) {
 
 		props.style = this.prepareStyle(props, state)
 		props.separatorStyle = this.prepareSeparatorStyle(props, state)
@@ -581,73 +586,74 @@ export default var ____Class0=React.Component;for(var ____Class0____Key in ____C
 		this.prepareSecondStyles(props, state)
 		this.prepareMeridianStyles(props, state)
 
-	};
+	},
 
-	TimePicker.prototype.prepareStyle=function(props, state) {
+	prepareStyle: function(props, state) {
 		return this.normalize(assign({}, props.defaultStyle, props.style))
-	};
+	},
 
-	TimePicker.prototype.prepareSeparatorStyle=function(props, state) {
+	prepareSeparatorStyle: function(props, state) {
 		return this.normalize(assign({}, props.defaultSeparatorStyle, props.separatorStyle))
-	};
+	},
 
-	TimePicker.prototype.prepareArrowStyles=function(props, state) {
+	prepareArrowStyles: function(props, state) {
 		props.arrowUpStyle = this.normalize(assign({}, props.defaultArrowStyle, props.defaultArrowUpStyle, props.arrowStyle, props.arrowUpStyle))
 		props.arrowDownStyle = this.normalize(assign({}, props.defaultArrowStyle, props.defaultArrowDownStyle, props.arrowStyle, props.arrowDownStyle))
-	};
+	},
 
-	TimePicker.prototype.prepareHourStyles=function(props, state) {
+	prepareHourStyles: function(props, state) {
 		props.hourStyle = this.prepareHourStyle(props, state)
 		props.hourInputStyle = this.prepareHourInputStyle(props, state)
-	};
+	},
 
-	TimePicker.prototype.prepareHourStyle=function(props, state) {
+	prepareHourStyle: function(props, state) {
 		return this.normalize(assign({}, props.defaultBoxStyle, props.defaultHourStyle, props.boxStyle, props.hourStyle))
-	};
+	},
 
-	TimePicker.prototype.prepareHourInputStyle=function(props, state) {
+	prepareHourInputStyle: function(props, state) {
 		return this.normalize(assign({}, props.defaultInputStyle, props.defaultHourInputStyle, props.inputStyle, props.hourInputStyle))
-	};
+	},
 
-	TimePicker.prototype.prepareMinuteStyles=function(props, state) {
+	prepareMinuteStyles: function(props, state) {
 		props.minuteStyle = this.prepareMinuteStyle(props, state)
 		props.minuteInputStyle = this.prepareMinuteInputStyle(props, state)
-	};
+	},
 
-	TimePicker.prototype.prepareMinuteStyle=function(props, state) {
+	prepareMinuteStyle: function(props, state) {
 		return this.normalize(assign({}, props.defaultBoxStyle, props.defaultMinuteStyle, props.boxStyle, props.minuteStyle))
-	};
+	},
 
-	TimePicker.prototype.prepareMinuteInputStyle=function(props, state) {
+	prepareMinuteInputStyle: function(props, state) {
 		return this.normalize(assign({}, props.defaultInputStyle, props.defaultMinuteInputStyle, props.inputStyle, props.minuteInputStyle))
-	};
+	},
 
-	TimePicker.prototype.prepareSecondStyles=function(props, state) {
+	prepareSecondStyles: function(props, state) {
 		if (props.showSecond){
 			props.secondStyle = this.prepareSecondStyle(props, state)
 			props.secondInputStyle = this.prepareSecondInputStyle(props, state)
 		}
-	};
+	},
 
-	TimePicker.prototype.prepareSecondStyle=function(props, state) {
+	prepareSecondStyle: function(props, state) {
 		return this.normalize(assign({}, props.defaultBoxStyle, props.defaultSecondStyle, props.boxStyle, props.secondStyle))
-	};
+	},
 
-	TimePicker.prototype.prepareSecondInputStyle=function(props, state) {
+	prepareSecondInputStyle: function(props, state) {
 		return this.normalize(assign({}, props.defaultInputStyle, props.defaultSecondInputStyle, props.inputStyle, props.secondInputStyle))
-	};
+	},
 
-	TimePicker.prototype.prepareMeridianStyles=function(props, state) {
+	prepareMeridianStyles: function(props, state){
 		if (props.withMeridian){
 			props.meridianStyle = this.prepareMeridianStyle(props, state)
 			props.meridianInputStyle = this.prepareMeridianInputStyle(props, state)
 		}
-	};
+	},
 
-	TimePicker.prototype.prepareMeridianStyle=function(props, state) {
+	prepareMeridianStyle: function(props, state) {
 		return this.normalize(assign({}, props.defaultBoxStyle, props.defaultMeridianStyle, props.boxStyle, props.meridianStyle))
-	};
+	},
 
-	TimePicker.prototype.prepareMeridianInputStyle=function(props, state) {
+	prepareMeridianInputStyle: function(props, state) {
 		return this.normalize(assign({}, props.defaultInputStyle, props.defaultMeridianInputStyle, props.inputStyle, props.meridianInputStyle))
-	};
+	}
+})

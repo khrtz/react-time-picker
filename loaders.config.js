@@ -1,8 +1,7 @@
 module.exports = [
     {
         test: /\.jsx$/,
-        exclude: /node_modules/,
-        loader: 'babel'
+        loader: 'jsx-loader?insertPragma=React.DOM&harmony'
     },
     {
         test: /\.styl$/,
