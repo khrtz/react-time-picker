@@ -4,8 +4,6 @@ import normalize from 'react-style-normalizer';
 import parseTime from './parseTime';
 import updateTime from './updateTime';
 import toUpperFirst from './toUpperFirst';
-import hasTouch from 'has-touch';
-import EVENT_NAMES from 'react-event-names';
 import twoDigits from './twoDigits';
 import getFormatInfo from './getFormatInfo';
 import format from './format';
@@ -190,6 +188,7 @@ export default class TimePicker extends React.Component {
 	}
 
 	onArrowMouseDown(props, dir, name, event) {
+		const hasTouch = 'ontouchstart' in global || (global.DocumentTouch && document instanceof DocumentTouch);
 		if (name == 'meridian'){
 			this.onArrowMeridianAction(props, dir, name)
 			return
@@ -334,6 +333,18 @@ export default class TimePicker extends React.Component {
 		const style = props[name + 'Style'];
 		const inputStyle = props[name + 'InputStyle'];
 		const upperName  = toUpperFirst(name);
+		const hasTouch = 'ontouchstart' in global || (global.DocumentTouch && document instanceof DocumentTouch);
+		const EVENT_NAMES = hasTouch ?
+			{
+				onMouseDown: 'onTouchStart',
+				onMouseUp  : 'onTouchEnd',
+				onMouseMove: 'onTouchMove'
+			} :
+			{
+				onMouseDown: 'onMouseDown',
+				onMouseUp  : 'onMouseUp',
+				onMouseMove: 'onMouseMove'
+			}
 
 		let value;
 		if (!state.focused[name]) {
