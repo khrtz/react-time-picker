@@ -4,7 +4,6 @@ import normalize from 'react-style-normalizer';
 import parseTime from './parseTime';
 import updateTime from './updateTime';
 import toUpperFirst from './toUpperFirst';
-import hasTouch from 'has-touch';
 import EVENT_NAMES from 'react-event-names';
 import twoDigits from './twoDigits';
 import getFormatInfo from './getFormatInfo';
@@ -190,6 +189,7 @@ export default class TimePicker extends React.Component {
 	}
 
 	onArrowMouseDown(props, dir, name, event) {
+		const hasTouch = 'ontouchstart' in global || (global.DocumentTouch && document instanceof DocumentTouch);
 		if (name == 'meridian'){
 			this.onArrowMeridianAction(props, dir, name)
 			return
