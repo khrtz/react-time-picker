@@ -1,19 +1,33 @@
-'use strict';
+import React from 'react';
+import { render } from 'react-dom';
+import TimePicker from './src/TimePicker';
 
-var React      = require('react')
-var TimePicker = require('./src')
+export default class DemoApp extends React.Component {
+  
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: '14:00:01'
+    }
+  }
 
-var VALUE = '14:00:01'
+  onChange(value, moment) {
+    this.setState({
+      value: value
+    })
+  }
 
-var onChange = function(value){
-    // value = value.substring(0, 5)
-    picker.setProps({value: value})
+  render() {
+    return (
+      <TimePicker
+        value = {this.state.value}
+        onChange = {this.onChange.bind(this)}
+      />
+    )
+  }
 }
 
-var picker = React.render(
-    <TimePicker
-        value={VALUE}
-        onChange={onChange}
-    />,
-    document.getElementById('content')
+render(
+  <DemoApp />,
+  document.getElementById('content')
 )
