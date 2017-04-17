@@ -1,5 +1,5 @@
 module.exports = {
-    entry: './src/TimePicker.jsx',
+    entry: './src/index.jsx',
     output: {
         path         : __dirname + "/dist",
         libraryTarget: 'umd',
