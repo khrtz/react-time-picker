@@ -190,6 +190,10 @@ export default class TimePicker extends React.Component {
 	}
 
 	onArrowMouseDown(props, dir, name, event) {
+		// Fixed though there was a bat when right-clicked long pressed.
+		if (event.button === 2 || event.shiftKey || event.ctrlKey || event.altKey) {
+			return;
+		}
 		if (name == 'meridian'){
 			this.onArrowMeridianAction(props, dir, name)
 			return
