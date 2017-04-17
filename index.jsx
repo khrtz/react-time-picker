@@ -1,7 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
 import TimePicker from './src/TimePicker';
-import * as moment from "moment";
 
 export default class DemoApp extends React.Component {
   
