@@ -52,30 +52,30 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
 	var React       = __webpack_require__(1)
-	var assign      = __webpack_require__(9)
-	var normalize   = __webpack_require__(12)
+	var assign      = __webpack_require__(2)
+	var normalize   = __webpack_require__(3)
 
-	var parseTime    = __webpack_require__(2)
-	var updateTime   = __webpack_require__(3)
-	var toUpperFirst = __webpack_require__(4)
+	var parseTime    = __webpack_require__(15)
+	var updateTime   = __webpack_require__(28)
+	var toUpperFirst = __webpack_require__(29)
 
-	var hasTouch = __webpack_require__(10)
+	var hasTouch = __webpack_require__(30)
 
-	var EVENT_NAMES = __webpack_require__(11)
+	var EVENT_NAMES = __webpack_require__(31)
 
 	var WHITESPACE = '\u00a0'
 
 	function emptyFn(){}
 
-	var twoDigits     = __webpack_require__(5)
-	var getFormatInfo = __webpack_require__(6)
-	var format        = __webpack_require__(7)
-	var formatTime    = __webpack_require__(8)
+	var twoDigits     = __webpack_require__(32)
+	var getFormatInfo = __webpack_require__(33)
+	var format        = __webpack_require__(34)
+	var formatTime    = __webpack_require__(35)
 
 	function identity(v){ return v }
 
@@ -256,6 +256,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		},
 
 		onArrowMouseDown: function(props, dir, name, event){
+			// Fixed though there was a bat when right-clicked long pressed.
+			if (event.button === 2 || event.shiftKey || event.altKey || event.ctrlKey) {
+				return;
+			}
 
 			if (name == 'meridian'){
 				this.onArrowMeridianAction(props, dir, name)
@@ -715,19 +719,467 @@ return /******/ (function(modules) { // webpackBootstrap
 	})
 
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
-	var parseTime      = __webpack_require__(13)
+	function ToObject(val) {
+		if (val == null) {
+			throw new TypeError('Object.assign cannot be called with null or undefined');
+		}
+
+		return Object(val);
+	}
+
+	module.exports = Object.assign || function (target, source) {
+		var from;
+		var keys;
+		var to = ToObject(target);
+
+		for (var s = 1; s < arguments.length; s++) {
+			from = arguments[s];
+			keys = Object.keys(Object(from));
+
+			for (var i = 0; i < keys.length; i++) {
+				to[keys[i]] = from[keys[i]];
+			}
+		}
+
+		return to;
+	};
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var hasOwn      = __webpack_require__(4)
+	var getPrefixed = __webpack_require__(5)
+
+	var map      = __webpack_require__(11)
+	var plugable = __webpack_require__(12)
+
+	function plugins(key, value){
+
+		var result = {
+			key  : key,
+			value: value
+		}
+
+		;(RESULT.plugins || []).forEach(function(fn){
+
+			var tmp = map(function(res){
+				return fn(key, value, res)
+			}, result)
+
+			if (tmp){
+				result = tmp
+			}
+		})
+
+		return result
+	}
+
+	function normalize(key, value){
+
+		var result = plugins(key, value)
+
+		return map(function(result){
+			return {
+				key  : getPrefixed(result.key, result.value),
+				value: result.value
+			}
+		}, result)
+
+		return result
+	}
+
+	var RESULT = function(style){
+
+		var k
+		var item
+		var result = {}
+
+		for (k in style) if (hasOwn(style, k)){
+			item = normalize(k, style[k])
+
+			if (!item){
+				continue
+			}
+
+			map(function(item){
+				result[item.key] = item.value
+			}, item)
+		}
+
+		return result
+	}
+
+	module.exports = plugable(RESULT)
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	module.exports = function(obj, prop){
+		return Object.prototype.hasOwnProperty.call(obj, prop)
+	}
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var getStylePrefixed = __webpack_require__(6)
+	var properties       = __webpack_require__(10)
+
+	module.exports = function(key, value){
+
+		if (!properties[key]){
+			return key
+		}
+
+		return getStylePrefixed(key, value)
+	}
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var toUpperFirst = __webpack_require__(7)
+	var getPrefix    = __webpack_require__(8)
+	var el           = __webpack_require__(9)
+
+	var MEMORY = {}
+	var STYLE
+	var ELEMENT
+
+	var PREFIX
+
+	module.exports = function(key, value){
+
+	    ELEMENT = ELEMENT || el()
+	    STYLE   = STYLE   || ELEMENT.style
+
+	    var k = key// + ': ' + value
+
+	    if (MEMORY[k]){
+	        return MEMORY[k]
+	    }
+
+	    var prefix
+	    var prefixed
+
+	    if (!(key in STYLE)){//we have to prefix
+
+	        // if (PREFIX){
+	        //     prefix = PREFIX
+	        // } else {
+	            prefix = getPrefix('appearance')
+
+	        //     if (prefix){
+	        //         prefix = PREFIX = prefix.toLowerCase()
+	        //     }
+	        // }
+
+	        if (prefix){
+	            prefixed = prefix + toUpperFirst(key)
+
+	            if (prefixed in STYLE){
+	                key = prefixed
+	            }
+	        }
+	    }
+
+	    MEMORY[k] = key
+
+	    return key
+	}
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	module.exports = function(str){
+		return str?
+				str.charAt(0).toUpperCase() + str.slice(1):
+				''
+	}
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var toUpperFirst = __webpack_require__(7)
+	var prefixes     = ["ms", "Moz", "Webkit", "O"]
+
+	var el = __webpack_require__(9)
+
+	var ELEMENT
+	var PREFIX
+
+	module.exports = function(key){
+
+		if (PREFIX !== undefined){
+			return PREFIX
+		}
+
+		ELEMENT = ELEMENT || el()
+
+		var i = 0
+		var len = prefixes.length
+		var tmp
+		var prefix
+
+		for (; i < len; i++){
+			prefix = prefixes[i]
+			tmp = prefix + toUpperFirst(key)
+
+			if (typeof ELEMENT.style[tmp] != 'undefined'){
+				return PREFIX = prefix
+			}
+		}
+
+		return PREFIX
+	}
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
+
+	var el
+
+	module.exports = function(){
+
+		if(!el && !!global.document){
+		  	el = global.document.createElement('div')
+		}
+
+		if (!el){
+			el = {style: {}}
+		}
+
+		return el
+	}
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	module.exports = {
+	  'alignItems': 1,
+	  'justifyContent': 1,
+	  'flex': 1,
+	  'flexFlow': 1,
+	  'flexGrow': 1,
+	  'flexShrink': 1,
+	  'flexBasis': 1,
+	  'flexDirection': 1,
+	  'flexWrap': 1,
+	  'alignContent': 1,
+	  'alignSelf': 1,
+
+	  'userSelect': 1,
+	  'transform': 1,
+	  'transition': 1,
+	  'transformOrigin': 1,
+	  'transformStyle': 1,
+	  'transitionProperty': 1,
+	  'transitionDuration': 1,
+	  'transitionTimingFunction': 1,
+	  'transitionDelay': 1,
+	  'borderImage': 1,
+	  'borderImageSlice': 1,
+	  'boxShadow': 1,
+	  'backgroundClip': 1,
+	  'backfaceVisibility': 1,
+	  'perspective': 1,
+	  'perspectiveOrigin': 1,
+	  'animation': 1,
+	  'animationDuration': 1,
+	  'animationName': 1,
+	  'animationDelay': 1,
+	  'animationDirection': 1,
+	  'animationIterationCount': 1,
+	  'animationTimingFunction': 1,
+	  'animationPlayState': 1,
+	  'animationFillMode': 1,
+	  'appearance': 1
+	}
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	module.exports = function(fn, item){
+
+		if (!item){
+			return
+		}
+
+		if (Array.isArray(item)){
+			return item.map(fn).filter(function(x){
+				return !!x
+			})
+		} else {
+			return fn(item)
+		}
+	}
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var getCssPrefixedValue = __webpack_require__(13)
+
+	module.exports = function(target){
+		target.plugins = target.plugins || [
+			(function(){
+				var values = {
+					'flex':1,
+					'inline-flex':1
+				}
+
+				return function(key, value){
+					if (key === 'display' && value in values){
+						return {
+							key  : key,
+							value: getCssPrefixedValue(key, value, true)
+						}
+					}
+				}
+			})()
+		]
+
+		target.plugin = function(fn){
+			target.plugins = target.plugins || []
+
+			target.plugins.push(fn)
+		}
+
+		return target
+	}
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var getPrefix     = __webpack_require__(8)
+	var forcePrefixed = __webpack_require__(14)
+	var el            = __webpack_require__(9)
+
+	var MEMORY = {}
+	var STYLE
+	var ELEMENT
+
+	module.exports = function(key, value, force){
+
+	    ELEMENT = ELEMENT || el()
+	    STYLE   = STYLE   ||  ELEMENT.style
+
+	    var k = key + ': ' + value
+
+	    if (MEMORY[k]){
+	        return MEMORY[k]
+	    }
+
+	    var prefix
+	    var prefixed
+	    var prefixedValue
+
+	    if (force || !(key in STYLE)){
+
+	        prefix = getPrefix('appearance')
+
+	        if (prefix){
+	            prefixed = forcePrefixed(key, value)
+
+	            prefixedValue = '-' + prefix.toLowerCase() + '-' + value
+
+	            if (prefixed in STYLE){
+	                ELEMENT.style[prefixed] = ''
+	                ELEMENT.style[prefixed] = prefixedValue
+
+	                if (ELEMENT.style[prefixed] !== ''){
+	                    value = prefixedValue
+	                }
+	            }
+	        }
+	    }
+
+	    MEMORY[k] = value
+
+	    return value
+	}
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var toUpperFirst = __webpack_require__(7)
+	var getPrefix    = __webpack_require__(8)
+	var properties   = __webpack_require__(10)
+
+	/**
+	 * Returns the given key prefixed, if the property is found in the prefixProps map.
+	 *
+	 * Does not test if the property supports the given value unprefixed.
+	 * If you need this, use './getPrefixed' instead
+	 */
+	module.exports = function(key, value){
+
+		if (!properties[key]){
+			return key
+		}
+
+		var prefix = getPrefix(key)
+
+		return prefix?
+					prefix + toUpperFirst(key):
+					key
+	}
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var parseTime      = __webpack_require__(16)
 	var adjustOverflow = parseTime.adjustOverflow
 
 	var defaults = {}
@@ -816,401 +1268,20 @@ return /******/ (function(modules) { // webpackBootstrap
 		return result
 	}
 
-/***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var update = __webpack_require__(13).updateTime
-
-	module.exports = function(time, name, value, config){
-		time = update(time, name, value, config)
-
-		return time
-	}
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	module.exports = function(str){
-		return str?
-				str.charAt(0).toUpperCase() + str.slice(1):
-				''
-	}
-
-/***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-
-	module.exports = function twoDigits(value){
-		return value < 10?
-				'0' + value:
-				value
-	}
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-		function getHourInfo(format, value){
-			var len = 1
-			var specified = false
-
-			var index = format.indexOf('h')
-
-			if (~index){
-				specified = true
-				if (format.charAt(index + 1) == 'h'){
-					len++
-				}
-			} else {
-				index = format.indexOf('H')
-				if (~index){
-					specified = true
-					if (format.charAt(index + 1) == 'H'){
-						len++
-					}
-				}
-			}
-
-			return {
-				len: len,
-				specified: specified
-			}
-		}
-
-		function getMinuteInfo(format, value){
-			var len = 1
-			var specified = false
-			var index = format.indexOf('m')
-
-			if (~index){
-				specified =  true
-				if (format.charAt(index+1) == 'm'){
-					len++
-				}
-			}
-
-			return {
-				len: len,
-				specified: specified
-			}
-		}
-
-		function getSecondInfo(format, value){
-			var len = 1
-			var specified = false
-			var index = format.indexOf('s')
-
-			if (~index){
-				specified = true
-				if (format.charAt(index+1) == 's'){
-					len++
-				}
-			}
-
-			return {
-				len: len,
-				specified: specified
-			}
-		}
-
-		function isMeridianUpperCase(format, value){
-			var uppercase = true
-			var specified = false
-			var index = format.indexOf('a')
-
-			if (~index){
-				specified = true
-				uppercase = false
-			} else if (~format.indexOf('A')){
-				specified = true
-			}
-
-			return {
-				uppercase: uppercase,
-				lowercase: !uppercase,
-				specified: specified
-			}
-		}
-
-	module.exports = function(format){
-
-		if (typeof format != 'string'){
-			return {
-				hour    : {specified: false},
-				minute  : {specified: false},
-				second  : {specified: false},
-				meridian: {specified: false}
-			}
-		}
-
-		return {
-			hour    : getHourInfo(format),
-			minute  : getMinuteInfo(format),
-			second  : getSecondInfo(format),
-			meridian: isMeridianUpperCase(format)
-		}
-	}
-
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var twoDigits     = __webpack_require__(5)
-	var getFormatInfo = __webpack_require__(6)
-
-	module.exports = function(name, value, formatOrInfo){
-
-		var formatInfo = formatOrInfo
-
-		if (!formatInfo || !formatInfo.hour || typeof formatInfo == 'string'){
-			formatInfo = getFormatInfo(formatInfo)
-		}
-
-		if (!formatInfo){
-			return
-		}
-
-		var info = formatInfo[name]
-
-		if (value && name === 'meridian' && info.specified){
-			return info.uppercase? value.toUpperCase(): value.toLowerCase()
-		}
-
-		return info.specified?
-					info.len == 2?
-						twoDigits(value):
-						value
-					:
-					''
-	}
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var twoDigits      = __webpack_require__(5)
-	var getFormatInfo  = __webpack_require__(6)
-	var formatFunction = __webpack_require__(7)
-
-	function identity(x){
-		return x
-	}
-
-	module.exports = function(time, format){
-
-		var hourFormat     = twoDigits
-		var minuteFormat   = twoDigits
-		var secondFormat   = twoDigits
-		var meridianFormat = identity
-
-		if (format){
-			var formatInfo = typeof format == 'string'? getFormatInfo(format): format
-
-			if (formatInfo.hour.specified){
-				hourFormat = function(){
-					return formatFunction('hour', time.hour, formatInfo)
-				}
-			}
-
-			if (formatInfo.minute.specified){
-				minuteFormat = function(){
-					return formatFunction('minute', time.minute, formatInfo)
-				}
-			}
-
-			if (formatInfo.second.specified){
-				secondFormat = function(){
-					return formatFunction('second', time.second, formatInfo)
-				}
-			}
-
-			if (formatInfo.meridian.specified){
-				meridianFormat = function(){
-					return formatFunction('meridian', time.meridian, formatInfo)
-				}
-			}
-		}
-
-		var result = []
-
-		if (time.hour != null){
-			result.push(hourFormat(time.hour))
-		}
-
-		if (time.minute != null){
-		 	result.push(minuteFormat(time.minute))
-		}
-
-		if (time.second != null){
-			result.push(secondFormat(time.second))
-		}
-
-		var str = result.join(':')
-
-		if (time.meridian){
-			str += ' ' + meridianFormat(time.meridian)
-		}
-
-		return str
-	}
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	function ToObject(val) {
-		if (val == null) {
-			throw new TypeError('Object.assign cannot be called with null or undefined');
-		}
-
-		return Object(val);
-	}
-
-	module.exports = Object.assign || function (target, source) {
-		var from;
-		var keys;
-		var to = ToObject(target);
-
-		for (var s = 1; s < arguments.length; s++) {
-			from = arguments[s];
-			keys = Object.keys(Object(from));
-
-			for (var i = 0; i < keys.length; i++) {
-				to[keys[i]] = from[keys[i]];
-			}
-		}
-
-		return to;
-	};
-
-
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {module.exports = 'ontouchstart' in global || (global.DocumentTouch && document instanceof DocumentTouch)
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	module.exports = __webpack_require__(10)?
-		{
-			onMouseDown: 'onTouchStart',
-			onMouseUp  : 'onTouchEnd',
-			onMouseMove: 'onTouchMove'
-		}:
-		{
-			onMouseDown: 'onMouseDown',
-			onMouseUp  : 'onMouseUp',
-			onMouseMove: 'onMouseMove'
-		}
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var hasOwn      = __webpack_require__(14)
-	var getPrefixed = __webpack_require__(15)
-
-	var map      = __webpack_require__(16)
-	var plugable = __webpack_require__(17)
-
-	function plugins(key, value){
-
-		var result = {
-			key  : key,
-			value: value
-		}
-
-		;(RESULT.plugins || []).forEach(function(fn){
-
-			var tmp = map(function(res){
-				return fn(key, value, res)
-			}, result)
-
-			if (tmp){
-				result = tmp
-			}
-		})
-
-		return result
-	}
-
-	function normalize(key, value){
-
-		var result = plugins(key, value)
-
-		return map(function(result){
-			return {
-				key  : getPrefixed(result.key, result.value),
-				value: result.value
-			}
-		}, result)
-
-		return result
-	}
-
-	var RESULT = function(style){
-
-		var k
-		var item
-		var result = {}
-
-		for (k in style) if (hasOwn(style, k)){
-			item = normalize(k, style[k])
-
-			if (!item){
-				continue
-			}
-
-			map(function(item){
-				result[item.key] = item.value
-			}, item)
-		}
-
-		return result
-	}
-
-	module.exports = plugable(RESULT)
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var assign = __webpack_require__(9)
-	var defaults = __webpack_require__(18)
+	var assign = __webpack_require__(2)
+	var defaults = __webpack_require__(17)
 
 	function trim(str){
 		return str.trim()
 	}
 
-	var validHour     = __webpack_require__(19)
+	var validHour     = __webpack_require__(18)
 	var validMinute   = __webpack_require__(20)
 	var validSecond   = __webpack_require__(21)
 	var validMeridian = __webpack_require__(22)
@@ -1389,95 +1460,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = PARSE
 
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	module.exports = function(obj, prop){
-		return Object.prototype.hasOwnProperty.call(obj, prop)
-	}
-
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var getStylePrefixed = __webpack_require__(27)
-	var properties       = __webpack_require__(28)
-
-	module.exports = function(key, value){
-
-		if (!properties[key]){
-			return key
-		}
-
-		return getStylePrefixed(key, value)
-	}
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	module.exports = function(fn, item){
-
-		if (!item){
-			return
-		}
-
-		if (Array.isArray(item)){
-			return item.map(fn).filter(function(x){
-				return !!x
-			})
-		} else {
-			return fn(item)
-		}
-	}
-
-/***/ },
+/***/ }),
 /* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var getCssPrefixedValue = __webpack_require__(29)
-
-	module.exports = function(target){
-		target.plugins = target.plugins || [
-			(function(){
-				var values = {
-					'flex':1,
-					'inline-flex':1
-				}
-
-				return function(key, value){
-					if (key === 'display' && value in values){
-						return {
-							key  : key,
-							value: getCssPrefixedValue(key, value)
-						}
-					}
-				}
-			})()
-		]
-
-		target.plugin = function(fn){
-			target.plugins = target.plugins || []
-
-			target.plugins.push(fn)
-		}
-
-		return target
-	}
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -1486,14 +1471,14 @@ return /******/ (function(modules) { // webpackBootstrap
 		twoDigits: true
 	}
 
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var validNumber = __webpack_require__(30)
-	var assign      = __webpack_require__(9)
+	var validNumber = __webpack_require__(19)
+	var assign      = __webpack_require__(2)
 
 	module.exports = function validHour(value, config){
 		config = assign({}, config)
@@ -1515,14 +1500,44 @@ return /******/ (function(modules) { // webpackBootstrap
 		return false
 	}
 
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var validNumber = __webpack_require__(30)
-	var assign      = __webpack_require__(9)
+	var assign   = __webpack_require__(2)
+	var defaults = __webpack_require__(17)
+
+	module.exports = function validNumber(n, config){
+		var valid = !isNaN(n * 1)
+
+		if (config){
+			config = assign({}, defaults, config)
+		} else {
+			config = defaults
+		}
+
+		if (valid && typeof n == 'string' && config.twoDigits){
+			valid = n.length == 2
+		}
+
+		if (valid){
+			n = n * 1
+			valid = parseInt(n) === n
+		}
+
+		return valid
+	}
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var validNumber = __webpack_require__(19)
+	var assign      = __webpack_require__(2)
 
 	module.exports = function validMinute(value, config){
 
@@ -1538,14 +1553,14 @@ return /******/ (function(modules) { // webpackBootstrap
 		return false
 	}
 
-/***/ },
+/***/ }),
 /* 21 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var validMinute = __webpack_require__(20)
-	var assign      = __webpack_require__(9)
+	var assign      = __webpack_require__(2)
 
 	module.exports = function validSecond(value, config){
 		config = assign({}, config)
@@ -1554,9 +1569,9 @@ return /******/ (function(modules) { // webpackBootstrap
 		return validMinute(value, config)
 	}
 
-/***/ },
+/***/ }),
 /* 22 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -1570,13 +1585,13 @@ return /******/ (function(modules) { // webpackBootstrap
 		return value == 'AM' || value == 'PM'
 	}
 
-/***/ },
+/***/ }),
 /* 23 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var validHour     = __webpack_require__(19)
+	var validHour     = __webpack_require__(18)
 	var validMinute   = __webpack_require__(20)
 	var validSecond   = __webpack_require__(21)
 	var validMeridian = __webpack_require__(22)
@@ -1623,14 +1638,14 @@ return /******/ (function(modules) { // webpackBootstrap
 		return !!(fn && fn(value, config))
 	}
 
-/***/ },
+/***/ }),
 /* 24 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var isValidPart = __webpack_require__(23)
-	var assign = __webpack_require__(9)
+	var assign = __webpack_require__(2)
 
 	module.exports = function isValidTime(time, config){
 
@@ -1656,19 +1671,19 @@ return /******/ (function(modules) { // webpackBootstrap
 		return valid
 	}
 
-/***/ },
+/***/ }),
 /* 25 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var assign      = __webpack_require__(9)
-	var isValidNumber = __webpack_require__(30)
+	var assign      = __webpack_require__(2)
+	var isValidNumber = __webpack_require__(19)
 	var isValidPart = __webpack_require__(23)
 	var isValidTime = __webpack_require__(24)
 	var adjustOverflow = __webpack_require__(26)
 
-	var clamp = __webpack_require__(31)
+	var clamp = __webpack_require__(27)
 
 	/**
 	 * @param {Object} time
@@ -1718,9 +1733,9 @@ return /******/ (function(modules) { // webpackBootstrap
 		return time
 	}
 
-/***/ },
+/***/ }),
 /* 26 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -1844,179 +1859,9 @@ return /******/ (function(modules) { // webpackBootstrap
 		return values
 	}
 
-/***/ },
+/***/ }),
 /* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var toUpperFirst = __webpack_require__(32)
-	var getPrefix    = __webpack_require__(33)
-	var el           = __webpack_require__(34)
-
-	var MEMORY = {}
-	var STYLE
-	var ELEMENT
-
-	module.exports = function(key, value){
-
-	    ELEMENT = ELEMENT || el()
-	    STYLE   = STYLE   || ELEMENT.style
-
-	    var k = key// + ': ' + value
-
-	    if (MEMORY[k]){
-	        return MEMORY[k]
-	    }
-
-	    var prefix
-	    var prefixed
-
-	    if (!(key in STYLE)){//we have to prefix
-
-	        prefix = getPrefix('appearance')
-
-	        if (prefix){
-	            prefixed = prefix + toUpperFirst(key)
-
-	            if (prefixed in STYLE){
-	                key = prefixed
-	            }
-	        }
-	    }
-
-	    MEMORY[k] = key
-
-	    return key
-	}
-
-/***/ },
-/* 28 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	module.exports = {
-	  'alignItems': 1,
-	  'justifyContent': 1,
-	  'flex': 1,
-	  'flexFlow': 1,
-
-	  'userSelect': 1,
-	  'transform': 1,
-	  'transition': 1,
-	  'transformOrigin': 1,
-	  'transformStyle': 1,
-	  'transitionProperty': 1,
-	  'transitionDuration': 1,
-	  'transitionTimingFunction': 1,
-	  'transitionDelay': 1,
-	  'borderImage': 1,
-	  'borderImageSlice': 1,
-	  'boxShadow': 1,
-	  'backgroundClip': 1,
-	  'backfaceVisibility': 1,
-	  'perspective': 1,
-	  'perspectiveOrigin': 1,
-	  'animation': 1,
-	  'animationDuration': 1,
-	  'animationName': 1,
-	  'animationDelay': 1,
-	  'animationDirection': 1,
-	  'animationIterationCount': 1,
-	  'animationTimingFunction': 1,
-	  'animationPlayState': 1,
-	  'animationFillMode': 1,
-	  'appearance': 1
-	}
-
-/***/ },
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var getPrefix     = __webpack_require__(33)
-	var forcePrefixed = __webpack_require__(35)
-	var el            = __webpack_require__(34)
-
-	var MEMORY = {}
-	var STYLE
-	var ELEMENT
-
-	module.exports = function(key, value){
-
-	    ELEMENT = ELEMENT || el()
-	    STYLE   = STYLE   ||  ELEMENT.style
-
-	    var k = key + ': ' + value
-
-	    if (MEMORY[k]){
-	        return MEMORY[k]
-	    }
-
-	    var prefix
-	    var prefixed
-	    var prefixedValue
-
-	    if (!(key in STYLE)){
-
-	        prefix = getPrefix('appearance')
-
-	        if (prefix){
-	            prefixed = forcePrefixed(key, value)
-
-	            prefixedValue = '-' + prefix.toLowerCase() + '-' + value
-
-	            if (prefixed in STYLE){
-	                ELEMENT.style[prefixed] = ''
-	                ELEMENT.style[prefixed] = prefixedValue
-
-	                if (ELEMENT.style[prefixed] !== ''){
-	                    value = prefixedValue
-	                }
-	            }
-	        }
-	    }
-
-	    MEMORY[k] = value
-
-	    return value
-	}
-
-/***/ },
-/* 30 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var assign   = __webpack_require__(9)
-	var defaults = __webpack_require__(18)
-
-	module.exports = function validNumber(n, config){
-		var valid = !isNaN(n * 1)
-
-		if (config){
-			config = assign({}, defaults, config)
-		} else {
-			config = defaults
-		}
-
-		if (valid && typeof n == 'string' && config.twoDigits){
-			valid = n.length == 2
-		}
-
-		if (valid){
-			n = n * 1
-			valid = parseInt(n) === n
-		}
-
-		return valid
-	}
-
-/***/ },
-/* 31 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -2045,9 +1890,23 @@ return /******/ (function(modules) { // webpackBootstrap
 						value
 	}
 
-/***/ },
-/* 32 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var update = __webpack_require__(16).updateTime
+
+	module.exports = function(time, name, value, config){
+		time = update(time, name, value, config)
+
+		return time
+	}
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -2057,97 +1916,260 @@ return /******/ (function(modules) { // webpackBootstrap
 				''
 	}
 
-/***/ },
-/* 33 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 30 */
+/***/ (function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {module.exports = 'ontouchstart' in global || (global.DocumentTouch && document instanceof DocumentTouch)
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var toUpperFirst = __webpack_require__(32)
-	var prefixes     = ["ms", "Moz", "Webkit", "O"]
-
-	var el = __webpack_require__(34)
-
-	var ELEMENT
-	var PREFIX
-
-	module.exports = function(key){
-
-		if (PREFIX !== undefined){
-			return PREFIX
+	module.exports = __webpack_require__(30)?
+		{
+			onMouseDown: 'onTouchStart',
+			onMouseUp  : 'onTouchEnd',
+			onMouseMove: 'onTouchMove'
+		}:
+		{
+			onMouseDown: 'onMouseDown',
+			onMouseUp  : 'onMouseUp',
+			onMouseMove: 'onMouseMove'
 		}
 
-		ELEMENT = ELEMENT || el()
+/***/ }),
+/* 32 */
+/***/ (function(module, exports) {
 
-		var i = 0
-		var len = prefixes.length
-		var tmp
-		var prefix
+	'use strict';
 
-		for (; i < len; i++){
-			prefix = prefixes[i]
-			tmp = prefix + toUpperFirst(key)
 
-			if (typeof ELEMENT.style[tmp] != 'undefined'){
-				return PREFIX = prefix
+	module.exports = function twoDigits(value){
+		return value < 10?
+				'0' + value:
+				value
+	}
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+		function getHourInfo(format, value){
+			var len = 1
+			var specified = false
+
+			var index = format.indexOf('h')
+
+			if (~index){
+				specified = true
+				if (format.charAt(index + 1) == 'h'){
+					len++
+				}
+			} else {
+				index = format.indexOf('H')
+				if (~index){
+					specified = true
+					if (format.charAt(index + 1) == 'H'){
+						len++
+					}
+				}
+			}
+
+			return {
+				len: len,
+				specified: specified
 			}
 		}
 
-		return PREFIX
+		function getMinuteInfo(format, value){
+			var len = 1
+			var specified = false
+			var index = format.indexOf('m')
+
+			if (~index){
+				specified =  true
+				if (format.charAt(index+1) == 'm'){
+					len++
+				}
+			}
+
+			return {
+				len: len,
+				specified: specified
+			}
+		}
+
+		function getSecondInfo(format, value){
+			var len = 1
+			var specified = false
+			var index = format.indexOf('s')
+
+			if (~index){
+				specified = true
+				if (format.charAt(index+1) == 's'){
+					len++
+				}
+			}
+
+			return {
+				len: len,
+				specified: specified
+			}
+		}
+
+		function isMeridianUpperCase(format, value){
+			var uppercase = true
+			var specified = false
+			var index = format.indexOf('a')
+
+			if (~index){
+				specified = true
+				uppercase = false
+			} else if (~format.indexOf('A')){
+				specified = true
+			}
+
+			return {
+				uppercase: uppercase,
+				lowercase: !uppercase,
+				specified: specified
+			}
+		}
+
+	module.exports = function(format){
+
+		if (typeof format != 'string'){
+			return {
+				hour    : {specified: false},
+				minute  : {specified: false},
+				second  : {specified: false},
+				meridian: {specified: false}
+			}
+		}
+
+		return {
+			hour    : getHourInfo(format),
+			minute  : getMinuteInfo(format),
+			second  : getSecondInfo(format),
+			meridian: isMeridianUpperCase(format)
+		}
 	}
 
-/***/ },
+
+/***/ }),
 /* 34 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
-
-	var el
-
-	module.exports = function(){
-
-		if(!el && !!global.document){
-		  	el = global.document.createElement('div')
-		}
-
-		if (!el){
-			el = {style: {}}
-		}
-
-		return el
-	}
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 35 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var toUpperFirst = __webpack_require__(32)
-	var getPrefix    = __webpack_require__(33)
-	var properties   = __webpack_require__(28)
+	var twoDigits     = __webpack_require__(32)
+	var getFormatInfo = __webpack_require__(33)
 
-	/**
-	 * Returns the given key prefixed, if the property is found in the prefixProps map.
-	 *
-	 * Does not test if the property supports the given value unprefixed.
-	 * If you need this, use './getPrefixed' instead
-	 */
-	module.exports = function(key, value){
+	module.exports = function(name, value, formatOrInfo){
 
-		if (!properties[key]){
-			return key
+		var formatInfo = formatOrInfo
+
+		if (!formatInfo || !formatInfo.hour || typeof formatInfo == 'string'){
+			formatInfo = getFormatInfo(formatInfo)
 		}
 
-		var prefix = getPrefix(key)
+		if (!formatInfo){
+			return
+		}
 
-		return prefix?
-					prefix + toUpperFirst(key):
-					key
+		var info = formatInfo[name]
+
+		if (value && name === 'meridian' && info.specified){
+			return info.uppercase? value.toUpperCase(): value.toLowerCase()
+		}
+
+		return info.specified?
+					info.len == 2?
+						twoDigits(value):
+						value
+					:
+					''
 	}
 
-/***/ }
+/***/ }),
+/* 35 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var twoDigits      = __webpack_require__(32)
+	var getFormatInfo  = __webpack_require__(33)
+	var formatFunction = __webpack_require__(34)
+
+	function identity(x){
+		return x
+	}
+
+	module.exports = function(time, format){
+
+		var hourFormat     = twoDigits
+		var minuteFormat   = twoDigits
+		var secondFormat   = twoDigits
+		var meridianFormat = identity
+
+		if (format){
+			var formatInfo = typeof format == 'string'? getFormatInfo(format): format
+
+			if (formatInfo.hour.specified){
+				hourFormat = function(){
+					return formatFunction('hour', time.hour, formatInfo)
+				}
+			}
+
+			if (formatInfo.minute.specified){
+				minuteFormat = function(){
+					return formatFunction('minute', time.minute, formatInfo)
+				}
+			}
+
+			if (formatInfo.second.specified){
+				secondFormat = function(){
+					return formatFunction('second', time.second, formatInfo)
+				}
+			}
+
+			if (formatInfo.meridian.specified){
+				meridianFormat = function(){
+					return formatFunction('meridian', time.meridian, formatInfo)
+				}
+			}
+		}
+
+		var result = []
+
+		if (time.hour != null){
+			result.push(hourFormat(time.hour))
+		}
+
+		if (time.minute != null){
+		 	result.push(minuteFormat(time.minute))
+		}
+
+		if (time.second != null){
+			result.push(secondFormat(time.second))
+		}
+
+		var str = result.join(':')
+
+		if (time.meridian){
+			str += ' ' + meridianFormat(time.meridian)
+		}
+
+		return str
+	}
+
+/***/ })
 /******/ ])
 });
 ;
