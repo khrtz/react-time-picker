@@ -54,46 +54,48 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	/** @jsx React.DOM */'use strict';
+	'use strict';
 
-	var React       = __webpack_require__(1)
-	var assign      = __webpack_require__(2)
-	var normalize   = __webpack_require__(3)
+	var React = __webpack_require__(1);
+	var assign = __webpack_require__(2);
+	var _normalize = __webpack_require__(3);
 
-	var parseTime    = __webpack_require__(15)
-	var updateTime   = __webpack_require__(28)
-	var toUpperFirst = __webpack_require__(29)
+	var parseTime = __webpack_require__(15);
+	var _updateTime = __webpack_require__(28);
+	var toUpperFirst = __webpack_require__(29);
 
-	var hasTouch = __webpack_require__(30)
+	var hasTouch = __webpack_require__(30);
 
-	var EVENT_NAMES = __webpack_require__(31)
+	var EVENT_NAMES = __webpack_require__(31);
 
-	var WHITESPACE = '\u00a0'
+	var WHITESPACE = '\xA0';
 
-	function emptyFn(){}
+	function emptyFn() {}
 
-	var twoDigits     = __webpack_require__(32)
-	var getFormatInfo = __webpack_require__(33)
-	var format        = __webpack_require__(34)
-	var formatTime    = __webpack_require__(35)
+	var twoDigits = __webpack_require__(32);
+	var getFormatInfo = __webpack_require__(33);
+	var _format = __webpack_require__(34);
+	var formatTime = __webpack_require__(35);
 
-	function identity(v){ return v }
+	function identity(v) {
+		return v;
+	}
 
 	module.exports = React.createClass({
 
 		displayName: 'ReactTimePicker',
 
-		componentWillUnmount: function(){
-			this.stopInterval()
+		componentWillUnmount: function componentWillUnmount() {
+			this.stopInterval();
 		},
 
-		getInitialState: function(){
+		getInitialState: function getInitialState() {
 			return {
 				defaultValue: this.props.defaultValue,
 				focused: {
-					hour    : null,
-					minute  : null,
-					second  : null,
+					hour: null,
+					minute: null,
+					second: null,
 					meridian: null
 				},
 				overArrow: {
@@ -102,10 +104,10 @@ return /******/ (function(modules) { // webpackBootstrap
 					second: null,
 					meridian: null
 				}
-			}
+			};
 		},
 
-		getDefaultProps: function() {
+		getDefaultProps: function getDefaultProps() {
 			return {
 				normalizeStyle: true,
 				stopChangePropagation: true,
@@ -156,15 +158,15 @@ return /******/ (function(modules) { // webpackBootstrap
 				},
 
 				defaultBoxStyle: {
-					boxSizing : 'border-box',
-					display   : 'flex',
-					flexFlow  : 'column',
+					boxSizing: 'border-box',
+					display: 'flex',
+					flexFlow: 'column',
 					alignItems: 'center'
 				},
 
 				defaultInputStyle: {
 					boxSizing: 'border-box',
-					width    : '100%',
+					width: '100%',
 					textAlign: 'center'
 				},
 
@@ -201,523 +203,498 @@ return /******/ (function(modules) { // webpackBootstrap
 				meridianInputFactory: null,
 
 				timeToString: formatTime
-			}
+			};
 		},
 
-		normalize: function(style) {
-			return normalize(style)
+		normalize: function normalize(style) {
+			return _normalize(style);
 		},
 
-		render: function(){
-			var props = this.prepareProps(this.props, this.state)
+		render: function render() {
+			var props = this.prepareProps(this.props, this.state);
 
-			if (!props.normalizeStyle){
-				this.normalize = identity
+			if (!props.normalizeStyle) {
+				this.normalize = identity;
 			}
 
-			var hour     = this.renderHour(props)
-			var minute   = this.renderMinute(props)
-			var second   = this.renderSecond(props)
-			var meridian = this.renderMeridian(props)
+			var hour = this.renderHour(props);
+			var minute = this.renderMinute(props);
+			var second = this.renderSecond(props);
+			var meridian = this.renderMeridian(props);
 
-			var separator       = props.separator || React.createElement("span", {style: props.separatorStyle}, WHITESPACE + ':' + WHITESPACE)
-			var hourSeparator   = hour && (minute || second || meridian)? props.hourSeparator || separator: null
-			var minuteSeparator = minute && (second || meridian)? props.minuteSeparator || separator: null
-			var secondSeparator = (second && meridian)? props.secondSeparator || separator: null
+			var separator = props.separator || React.createElement(
+				'span',
+				{ style: props.separatorStyle },
+				WHITESPACE + ':' + WHITESPACE
+			);
+			var hourSeparator = hour && (minute || second || meridian) ? props.hourSeparator || separator : null;
+			var minuteSeparator = minute && (second || meridian) ? props.minuteSeparator || separator : null;
+			var secondSeparator = second && meridian ? props.secondSeparator || separator : null;
 
-
-			return React.createElement("div", React.__spread({},  props), 
-				hour, 
-				hourSeparator, 
-				minute, 
-				minuteSeparator, 
-				second, 
-				secondSeparator, 
+			return React.createElement(
+				'div',
+				props,
+				hour,
+				hourSeparator,
+				minute,
+				minuteSeparator,
+				second,
+				secondSeparator,
 				meridian
-			)
+			);
 		},
 
-		onArrowMouseEnter: function(props, dir, name, event) {
-			var overArrow = this.state.overArrow
+		onArrowMouseEnter: function onArrowMouseEnter(props, dir, name, event) {
+			var overArrow = this.state.overArrow;
 
-			Object.keys(overArrow).forEach(function(key){
-				overArrow[key] = null
-			})
+			Object.keys(overArrow).forEach(function (key) {
+				overArrow[key] = null;
+			});
 
-			overArrow[name] = dir
+			overArrow[name] = dir;
 
-			this.setState({})
+			this.setState({});
 		},
 
-		onArrowMouseLeave: function(props, dir, name, event) {
-			this.state.overArrow[name] = null
+		onArrowMouseLeave: function onArrowMouseLeave(props, dir, name, event) {
+			this.state.overArrow[name] = null;
 
-			this.setState({})
+			this.setState({});
 		},
 
-		onArrowMouseDown: function(props, dir, name, event){
+		onArrowMouseDown: function onArrowMouseDown(props, dir, name, event) {
 			// Fixed though there was a bat when right-clicked long pressed.
 			if (event.button === 2 || event.shiftKey || event.altKey || event.ctrlKey) {
 				return;
 			}
 
-			if (name == 'meridian'){
-				this.onArrowMeridianAction(props, dir, name)
-				return
+			if (name == 'meridian') {
+				this.onArrowMeridianAction(props, dir, name);
+				return;
 			}
 
-			var target = hasTouch?
-			                event.target:
-			                window
-			var eventName = hasTouch?
-								'touchend':
-								'click'
+			var target = hasTouch ? event.target : window;
+			var eventName = hasTouch ? 'touchend' : 'click';
 
-			target.addEventListener(eventName, this.onWindowClick)
+			target.addEventListener(eventName, this.onWindowClick);
 
-			this.onArrowAction(props, dir, name)
+			this.onArrowAction(props, dir, name);
 
-			this.timeoutId = setTimeout(function(){
-				this.startInterval(props, dir, name)
-			}.bind(this), props.stepDelay)
+			this.timeoutId = setTimeout(function () {
+				this.startInterval(props, dir, name);
+			}.bind(this), props.stepDelay);
 		},
 
-		onWindowClick: function(){
-			this.stopInterval()
+		onWindowClick: function onWindowClick() {
+			this.stopInterval();
 		},
 
-		stopInterval: function(){
-			clearTimeout(this.timeoutId)
-			clearInterval(this.intervalId)
+		stopInterval: function stopInterval() {
+			clearTimeout(this.timeoutId);
+			clearInterval(this.intervalId);
 		},
 
-		startInterval: function(props, dir, name){
-			this.intervalId = setInterval(function(){
-				this.onArrowAction(props, dir, name)
-			}.bind(this), props.stepDelay)
+		startInterval: function startInterval(props, dir, name) {
+			this.intervalId = setInterval(function () {
+				this.onArrowAction(props, dir, name);
+			}.bind(this), props.stepDelay);
 		},
 
-		onMeridianInputMouseDown: function(props, event){
-			event.preventDefault()
-			this.onArrowMeridianAction(props, 1, 'meridian')
+		onMeridianInputMouseDown: function onMeridianInputMouseDown(props, event) {
+			event.preventDefault();
+			this.onArrowMeridianAction(props, 1, 'meridian');
 		},
 
-		onArrowMeridianAction: function(props, dir, name){
-			var currentMeridian = this.time.meridian
-			var lowercase = currentMeridian == 'am' || currentMeridian == 'pm'
+		onArrowMeridianAction: function onArrowMeridianAction(props, dir, name) {
+			var currentMeridian = this.time.meridian;
+			var lowercase = currentMeridian == 'am' || currentMeridian == 'pm';
 
-			var newValue = lowercase?
-								currentMeridian == 'am'? 'pm': 'am'
-								:
-								currentMeridian == 'AM'? 'PM': 'AM'
+			var newValue = lowercase ? currentMeridian == 'am' ? 'pm' : 'am' : currentMeridian == 'AM' ? 'PM' : 'AM';
 
-			this.updateValue(name, newValue)
+			this.updateValue(name, newValue);
 		},
 
-		onArrowAction: function(props, dir, name) {
+		onArrowAction: function onArrowAction(props, dir, name) {
 
-			var dirName = dir == 1? 'Up': 'Down'
-			var methodName = 'onArrow' + dirName + toUpperFirst(name) + 'Action'
+			var dirName = dir == 1 ? 'Up' : 'Down';
+			var methodName = 'onArrow' + dirName + toUpperFirst(name) + 'Action';
 
-			if (typeof this[methodName] == 'function'){
-				this[methodName](props)
+			if (typeof this[methodName] == 'function') {
+				this[methodName](props);
 			}
 
-			methodName = 'onArrow' + toUpperFirst(name) + 'Action'
+			methodName = 'onArrow' + toUpperFirst(name) + 'Action';
 
-			if (typeof this[methodName] == 'function'){
-				this[methodName](props, dir)
+			if (typeof this[methodName] == 'function') {
+				this[methodName](props, dir);
 			}
 
-			this.incValue(props, name, dir)
+			this.incValue(props, name, dir);
 		},
 
-		incValue: function(props, name, dir){
-			dir = dir || 0
+		incValue: function incValue(props, name, dir) {
+			dir = dir || 0;
 
-			var step     = props[name + 'Step'] || props.step
-			var amount   = dir * step
-			var time     = this.time
-			var oldValue = time[name]
-			var newValue = oldValue + amount
+			var step = props[name + 'Step'] || props.step;
+			var amount = dir * step;
+			var time = this.time;
+			var oldValue = time[name];
+			var newValue = oldValue + amount;
 
 			// this.setValue(time)
-			this.updateValue(name, newValue)
+			this.updateValue(name, newValue);
 		},
 
-		updateValue: function(name, newValue, config){
-			this.setValue(this.updateTime(name, newValue, config))
+		updateValue: function updateValue(name, newValue, config) {
+			this.setValue(this.updateTime(name, newValue, config));
 		},
 
-		updateTime: function(name, newValue, config){
-			config = config || {}
-			config.overflowHourToMeridian = this.props.overflowHourToMeridian
+		updateTime: function updateTime(name, newValue, config) {
+			config = config || {};
+			config.overflowHourToMeridian = this.props.overflowHourToMeridian;
 
-			var time = this.time
+			var time = this.time;
 
-			time = updateTime(time, name, newValue, config)
+			time = _updateTime(time, name, newValue, config);
 
-			return this.time = time
+			return this.time = time;
 		},
 
-		setValue: function(time){
+		setValue: function setValue(time) {
 
-			if (this.props.value == null){
+			if (this.props.value == null) {
 				this.setState({
 					defaultValue: time
-				})
+				});
 			}
 
-			;(this.props.onChange || emptyFn)(this.props.timeToString(time, this.props.format), assign({}, time))
+			;(this.props.onChange || emptyFn)(this.props.timeToString(time, this.props.format), assign({}, time));
 		},
 
-		format: function(props, name, value){
-			var renderFn
+		format: function format(props, name, value) {
+			var renderFn;
 
-			if (arguments.length < 3){
-				value = props.time[name]
+			if (arguments.length < 3) {
+				value = props.time[name];
 			}
 
-			if (name != 'meridian'){
-				renderFn = props['render' + toUpperFirst(name)]
+			if (name != 'meridian') {
+				renderFn = props['render' + toUpperFirst(name)];
 			} else {
-				renderFn = props.renderMeridian
+				renderFn = props.renderMeridian;
 			}
 
-			if (!renderFn && typeof props.format == 'string'){
-				var formatInfo = this.formatInfo
-				renderFn = function(value, name){
-					return format(name, value, formatInfo)
-				}
+			if (!renderFn && typeof props.format == 'string') {
+				var formatInfo = this.formatInfo;
+				renderFn = function renderFn(value, name) {
+					return _format(name, value, formatInfo);
+				};
 			}
 
-			if (!renderFn){
-				renderFn = twoDigits
+			if (!renderFn) {
+				renderFn = twoDigits;
 			}
 
-			if (typeof renderFn == 'function'){
-				value = renderFn(value, name, props)
+			if (typeof renderFn == 'function') {
+				value = renderFn(value, name, props);
 			}
 
-			return value
+			return value;
 		},
 
-		renderBox: function(props, name){
-			var state = this.state
-			var style      = props[name + 'Style']
-			var inputStyle = props[name + 'InputStyle']
-			var upperName  = toUpperFirst(name)
+		renderBox: function renderBox(props, name) {
+			var state = this.state;
+			var style = props[name + 'Style'];
+			var inputStyle = props[name + 'InputStyle'];
+			var upperName = toUpperFirst(name);
 
-			var value
+			var value;
 
-			if (!state.focused[name]){
-				value = this.format(props, name)
+			if (!state.focused[name]) {
+				value = this.format(props, name);
 			} else {
-				value = state.focused[name].value
+				value = state.focused[name].value;
 			}
 
-			var arrowUp
-			var arrowDown
+			var arrowUp;
+			var arrowDown;
 
-			if (props.showArrows){
-				var overArrow = this.state.overArrow[name]
+			if (props.showArrows) {
+				var overArrow = this.state.overArrow[name];
 
-				var arrowUpStyle = props.arrowUpStyle
+				var arrowUpStyle = props.arrowUpStyle;
 
-				if (overArrow == 1){
-					arrowUpStyle = assign({},
-										props.arrowUpStyle,
-										props.defaultArrowOverStyle,
-										props.defaultArrowUpOverStyle,
-										props.arrowOverStyle,
-										props.arrowUpOverStyle
-									)
+				if (overArrow == 1) {
+					arrowUpStyle = assign({}, props.arrowUpStyle, props.defaultArrowOverStyle, props.defaultArrowUpOverStyle, props.arrowOverStyle, props.arrowUpOverStyle);
 				}
 
 				var arrowUpProps = {
 					mouseOver: overArrow == 1,
-					style    : arrowUpStyle,
-					children : '▲'
-				}
+					style: arrowUpStyle,
+					children: '▲'
+				};
 
-				arrowUpProps[EVENT_NAMES.onMouseDown] = this.onArrowMouseDown.bind(this, props, 1, name)
-				arrowUpProps.onMouseEnter = this.onArrowMouseEnter.bind(this, props, 1, name)
-				arrowUpProps.onMouseLeave = this.onArrowMouseLeave.bind(this, props, 1, name)
+				arrowUpProps[EVENT_NAMES.onMouseDown] = this.onArrowMouseDown.bind(this, props, 1, name);
+				arrowUpProps.onMouseEnter = this.onArrowMouseEnter.bind(this, props, 1, name);
+				arrowUpProps.onMouseLeave = this.onArrowMouseLeave.bind(this, props, 1, name);
 
-				var arrowDownStyle = props.arrowDownStyle
+				var arrowDownStyle = props.arrowDownStyle;
 
-				if (overArrow == -1){
-					arrowDownStyle = assign({},
-										props.arrowDownStyle,
-										props.defaultArrowOverStyle,
-										props.defaultArrowDownOverStyle,
-										props.arrowOverStyle,
-										props.arrowDownOverStyle
-									)
+				if (overArrow == -1) {
+					arrowDownStyle = assign({}, props.arrowDownStyle, props.defaultArrowOverStyle, props.defaultArrowDownOverStyle, props.arrowOverStyle, props.arrowDownOverStyle);
 				}
 
 				var arrowDownProps = {
 					mouseOver: overArrow == -1,
-					style    : arrowDownStyle,
-					children : '▼'
+					style: arrowDownStyle,
+					children: '▼'
+				};
+
+				arrowDownProps[EVENT_NAMES.onMouseDown] = this.onArrowMouseDown.bind(this, props, -1, name);
+				arrowDownProps.onMouseEnter = this.onArrowMouseEnter.bind(this, props, -1, name);
+				arrowDownProps.onMouseLeave = this.onArrowMouseLeave.bind(this, props, -1, name);
+
+				var defaultArrowFactory = props.defaultArrowFactory;
+				var arrowUpFactory = props.arrowUpFactory || props.arrowFactory || defaultArrowFactory;
+				var arrowDownFactory = props.arrowDownFactory || props.arrowFactory || defaultArrowFactory;
+
+				arrowUp = arrowUpFactory(arrowUpProps);
+
+				if (arrowUp === undefined) {
+					arrowUp = defaultArrowFactory(arrowUpProps);
 				}
 
-				arrowDownProps[EVENT_NAMES.onMouseDown] = this.onArrowMouseDown.bind(this, props, -1, name)
-				arrowDownProps.onMouseEnter = this.onArrowMouseEnter.bind(this, props, -1, name)
-				arrowDownProps.onMouseLeave = this.onArrowMouseLeave.bind(this, props, -1, name)
-
-				var defaultArrowFactory = props.defaultArrowFactory
-				var arrowUpFactory = props.arrowUpFactory || props.arrowFactory || defaultArrowFactory
-				var arrowDownFactory = props.arrowDownFactory || props.arrowFactory || defaultArrowFactory
-
-				arrowUp = arrowUpFactory(arrowUpProps)
-
-				if (arrowUp === undefined){
-					arrowUp = defaultArrowFactory(arrowUpProps)
-				}
-
-				arrowDown = arrowDownFactory(arrowDownProps)
-				if (arrowDown === undefined){
-					arrowDown = defaultArrowFactory(arrowDownProps)
+				arrowDown = arrowDownFactory(arrowDownProps);
+				if (arrowDown === undefined) {
+					arrowDown = defaultArrowFactory(arrowDownProps);
 				}
 			}
 
-			var defaultInputFactory = props.defaultInputFactory
-			var inputFactory = props[name + 'InputFactory'] || props.inputFactory || defaultInputFactory
+			var defaultInputFactory = props.defaultInputFactory;
+			var inputFactory = props[name + 'InputFactory'] || props.inputFactory || defaultInputFactory;
 
-			var defaultInputProps = props['default' + upperName + 'InputProps']
-			var inputProps        = props[name + 'InputProps']
+			var defaultInputProps = props['default' + upperName + 'InputProps'];
+			var inputProps = props[name + 'InputProps'];
 
 			var inputProps = assign({}, props.inputProps, defaultInputProps, inputProps, {
 				timeName: name,
-				style   : inputStyle,
-				value   : value,
-	      onBlur  : this.handleInputBlur.bind(this, props, name),
-	      onChange: this.handleInputChange.bind(this, props, name),
-	      onFocus : this.handleInputFocus.bind(this, props, name),
-	      onKeyUp : this.handleInputKeyUp.bind(this, props, name)
-			})
+				style: inputStyle,
+				value: value,
+				onBlur: this.handleInputBlur.bind(this, props, name),
+				onChange: this.handleInputChange.bind(this, props, name),
+				onFocus: this.handleInputFocus.bind(this, props, name),
+				onKeyUp: this.handleInputKeyUp.bind(this, props, name)
+			});
 
-			if (name == 'meridian'){
-				inputProps.onMouseDown = this.onMeridianInputMouseDown.bind(this, props)
+			if (name == 'meridian') {
+				inputProps.onMouseDown = this.onMeridianInputMouseDown.bind(this, props);
 			}
 
-			var input = inputFactory(inputProps)
+			var input = inputFactory(inputProps);
 
-			if (input === undefined){
-				input = defaultInputFactory(inputProps)
+			if (input === undefined) {
+				input = defaultInputFactory(inputProps);
 			}
 
-
-			return React.createElement("div", {style: style}, 
-				arrowUp, 
-				input, 
+			return React.createElement(
+				'div',
+				{ style: style },
+				arrowUp,
+				input,
 				arrowDown
-			)
+			);
 		},
 
-		handleInputFocus: function(props, name, event){
-			var focused = this.state.focused
+		handleInputFocus: function handleInputFocus(props, name, event) {
+			var focused = this.state.focused;
 
 			focused[name] = {
 				value: this.format(props, name)
-			}
+			};
 
-			this.stopInterval()
+			this.stopInterval();
 
-			this.setState({})
+			this.setState({});
 		},
 
-		handleInputBlur: function(props, name, event){
+		handleInputBlur: function handleInputBlur(props, name, event) {
 
-			this.state.focused[name] = null
-			this.setState({})
+			this.state.focused[name] = null;
+			this.setState({});
 
-			var time
-			var value = event.target.value * 1
+			var time;
+			var value = event.target.value * 1;
 
 			this.updateValue(name, value, {
 				clamp: props.clamp
-			})
+			});
 		},
 
-		handleInputChange: function(props, name, event){
-			if (this.state.focused[name]){
-				this.state.focused[name].value = event.target.value
+		handleInputChange: function handleInputChange(props, name, event) {
+			if (this.state.focused[name]) {
+				this.state.focused[name].value = event.target.value;
 			}
 
-			this.setState({})
-			props.stopChangePropagation && event.stopPropagation()
-	  },
+			this.setState({});
+			props.stopChangePropagation && event.stopPropagation();
+		},
 
-	  handleInputKeyUp: function(props, name, event){
-	    if (event.key === 'ArrowDown') {
-	      this.incValue(props, name, -1);
-	    }
-	    if (event.key === 'ArrowUp') {
-	      this.incValue(props, name, 1);
-	    }
-	    this.setState({focused: {}})
-	  },
+		handleInputKeyUp: function handleInputKeyUp(props, name, event) {
+			if (event.key === 'ArrowDown') {
+				this.incValue(props, name, -1);
+			}
+			if (event.key === 'ArrowUp') {
+				this.incValue(props, name, 1);
+			}
+			this.setState({ focused: {} });
+		},
 
-		getTime: function(){
-			var strict = this.props.strict
+		getTime: function getTime() {
+			var strict = this.props.strict;
 
-			var formatInfo = this.formatInfo = getFormatInfo(this.props.format)
+			var formatInfo = this.formatInfo = getFormatInfo(this.props.format);
 
 			return parseTime(this.getValue(), {
 				strict: strict,
 
-				hour    : formatInfo.hour,
-				minute  : formatInfo.minute,
-				second  : formatInfo.second,
+				hour: formatInfo.hour,
+				minute: formatInfo.minute,
+				second: formatInfo.second,
 				meridian: formatInfo.meridian
-			})
+			});
 		},
 
-		prepareTime: function(props, state) {
-			var timeValue  = this.getTime()
-			var formatInfo = this.props.format?
-								this.formatInfo:
-								null
+		prepareTime: function prepareTime(props, state) {
+			var timeValue = this.getTime();
+			var formatInfo = this.props.format ? this.formatInfo : null;
 
-			props.showSecond = formatInfo?
-									formatInfo.second.specified:
-									timeValue.second !== undefined
+			props.showSecond = formatInfo ? formatInfo.second.specified : timeValue.second !== undefined;
 
-			props.showMinute = formatInfo?
-									formatInfo.minute.specified:
-									timeValue.minute !== undefined
+			props.showMinute = formatInfo ? formatInfo.minute.specified : timeValue.minute !== undefined;
 
-			props.withMeridian = formatInfo?
-									formatInfo.meridian.specified:
-									timeValue.meridian != null
+			props.withMeridian = formatInfo ? formatInfo.meridian.specified : timeValue.meridian != null;
 
-			return timeValue
+			return timeValue;
 		},
 
-		getValue: function() {
-		    var value = this.props.value == null?
-		                    this.state.defaultValue:
-		                    this.props.value
+		getValue: function getValue() {
+			var value = this.props.value == null ? this.state.defaultValue : this.props.value;
 
-		    return value
+			return value;
 		},
 
-		renderHour: function(props) {
-			return this.renderBox(props, 'hour')
+		renderHour: function renderHour(props) {
+			return this.renderBox(props, 'hour');
 		},
 
-		renderMinute: function(props) {
-			if (props.showMinute){
-				return this.renderBox(props, 'minute')
+		renderMinute: function renderMinute(props) {
+			if (props.showMinute) {
+				return this.renderBox(props, 'minute');
 			}
 		},
 
-		renderSecond: function(props) {
-			if (props.showSecond){
-				return this.renderBox(props, 'second')
+		renderSecond: function renderSecond(props) {
+			if (props.showSecond) {
+				return this.renderBox(props, 'second');
 			}
 		},
 
-		renderMeridian: function(props) {
-			if (props.withMeridian){
-				return this.renderBox(props, 'meridian')
+		renderMeridian: function renderMeridian(props) {
+			if (props.withMeridian) {
+				return this.renderBox(props, 'meridian');
 			}
 		},
 
-		prepareProps: function(thisProps, state) {
-			var props = assign({}, thisProps)
+		prepareProps: function prepareProps(thisProps, state) {
+			var props = assign({}, thisProps);
 
-			this.time = props.time = this.prepareTime(props, state)
-			this.prepareStyles(props, state)
+			this.time = props.time = this.prepareTime(props, state);
+			this.prepareStyles(props, state);
 
-			return props
+			return props;
 		},
 
-		prepareStyles: function(props, state) {
+		prepareStyles: function prepareStyles(props, state) {
 
-			props.style = this.prepareStyle(props, state)
-			props.separatorStyle = this.prepareSeparatorStyle(props, state)
-			this.prepareArrowStyles(props, state)
+			props.style = this.prepareStyle(props, state);
+			props.separatorStyle = this.prepareSeparatorStyle(props, state);
+			this.prepareArrowStyles(props, state);
 
-			this.prepareHourStyles(props, state)
-			this.prepareMinuteStyles(props, state)
-			this.prepareSecondStyles(props, state)
-			this.prepareMeridianStyles(props, state)
-
+			this.prepareHourStyles(props, state);
+			this.prepareMinuteStyles(props, state);
+			this.prepareSecondStyles(props, state);
+			this.prepareMeridianStyles(props, state);
 		},
 
-		prepareStyle: function(props, state) {
-			return this.normalize(assign({}, props.defaultStyle, props.style))
+		prepareStyle: function prepareStyle(props, state) {
+			return this.normalize(assign({}, props.defaultStyle, props.style));
 		},
 
-		prepareSeparatorStyle: function(props, state) {
-			return this.normalize(assign({}, props.defaultSeparatorStyle, props.separatorStyle))
+		prepareSeparatorStyle: function prepareSeparatorStyle(props, state) {
+			return this.normalize(assign({}, props.defaultSeparatorStyle, props.separatorStyle));
 		},
 
-		prepareArrowStyles: function(props, state) {
-			props.arrowUpStyle = this.normalize(assign({}, props.defaultArrowStyle, props.defaultArrowUpStyle, props.arrowStyle, props.arrowUpStyle))
-			props.arrowDownStyle = this.normalize(assign({}, props.defaultArrowStyle, props.defaultArrowDownStyle, props.arrowStyle, props.arrowDownStyle))
+		prepareArrowStyles: function prepareArrowStyles(props, state) {
+			props.arrowUpStyle = this.normalize(assign({}, props.defaultArrowStyle, props.defaultArrowUpStyle, props.arrowStyle, props.arrowUpStyle));
+			props.arrowDownStyle = this.normalize(assign({}, props.defaultArrowStyle, props.defaultArrowDownStyle, props.arrowStyle, props.arrowDownStyle));
 		},
 
-		prepareHourStyles: function(props, state) {
-			props.hourStyle = this.prepareHourStyle(props, state)
-			props.hourInputStyle = this.prepareHourInputStyle(props, state)
+		prepareHourStyles: function prepareHourStyles(props, state) {
+			props.hourStyle = this.prepareHourStyle(props, state);
+			props.hourInputStyle = this.prepareHourInputStyle(props, state);
 		},
 
-		prepareHourStyle: function(props, state) {
-			return this.normalize(assign({}, props.defaultBoxStyle, props.defaultHourStyle, props.boxStyle, props.hourStyle))
+		prepareHourStyle: function prepareHourStyle(props, state) {
+			return this.normalize(assign({}, props.defaultBoxStyle, props.defaultHourStyle, props.boxStyle, props.hourStyle));
 		},
 
-		prepareHourInputStyle: function(props, state) {
-			return this.normalize(assign({}, props.defaultInputStyle, props.defaultHourInputStyle, props.inputStyle, props.hourInputStyle))
+		prepareHourInputStyle: function prepareHourInputStyle(props, state) {
+			return this.normalize(assign({}, props.defaultInputStyle, props.defaultHourInputStyle, props.inputStyle, props.hourInputStyle));
 		},
 
-		prepareMinuteStyles: function(props, state) {
-			props.minuteStyle = this.prepareMinuteStyle(props, state)
-			props.minuteInputStyle = this.prepareMinuteInputStyle(props, state)
+		prepareMinuteStyles: function prepareMinuteStyles(props, state) {
+			props.minuteStyle = this.prepareMinuteStyle(props, state);
+			props.minuteInputStyle = this.prepareMinuteInputStyle(props, state);
 		},
 
-		prepareMinuteStyle: function(props, state) {
-			return this.normalize(assign({}, props.defaultBoxStyle, props.defaultMinuteStyle, props.boxStyle, props.minuteStyle))
+		prepareMinuteStyle: function prepareMinuteStyle(props, state) {
+			return this.normalize(assign({}, props.defaultBoxStyle, props.defaultMinuteStyle, props.boxStyle, props.minuteStyle));
 		},
 
-		prepareMinuteInputStyle: function(props, state) {
-			return this.normalize(assign({}, props.defaultInputStyle, props.defaultMinuteInputStyle, props.inputStyle, props.minuteInputStyle))
+		prepareMinuteInputStyle: function prepareMinuteInputStyle(props, state) {
+			return this.normalize(assign({}, props.defaultInputStyle, props.defaultMinuteInputStyle, props.inputStyle, props.minuteInputStyle));
 		},
 
-		prepareSecondStyles: function(props, state) {
-			if (props.showSecond){
-				props.secondStyle = this.prepareSecondStyle(props, state)
-				props.secondInputStyle = this.prepareSecondInputStyle(props, state)
+		prepareSecondStyles: function prepareSecondStyles(props, state) {
+			if (props.showSecond) {
+				props.secondStyle = this.prepareSecondStyle(props, state);
+				props.secondInputStyle = this.prepareSecondInputStyle(props, state);
 			}
 		},
 
-		prepareSecondStyle: function(props, state) {
-			return this.normalize(assign({}, props.defaultBoxStyle, props.defaultSecondStyle, props.boxStyle, props.secondStyle))
+		prepareSecondStyle: function prepareSecondStyle(props, state) {
+			return this.normalize(assign({}, props.defaultBoxStyle, props.defaultSecondStyle, props.boxStyle, props.secondStyle));
 		},
 
-		prepareSecondInputStyle: function(props, state) {
-			return this.normalize(assign({}, props.defaultInputStyle, props.defaultSecondInputStyle, props.inputStyle, props.secondInputStyle))
+		prepareSecondInputStyle: function prepareSecondInputStyle(props, state) {
+			return this.normalize(assign({}, props.defaultInputStyle, props.defaultSecondInputStyle, props.inputStyle, props.secondInputStyle));
 		},
 
-		prepareMeridianStyles: function(props, state){
-			if (props.withMeridian){
-				props.meridianStyle = this.prepareMeridianStyle(props, state)
-				props.meridianInputStyle = this.prepareMeridianInputStyle(props, state)
+		prepareMeridianStyles: function prepareMeridianStyles(props, state) {
+			if (props.withMeridian) {
+				props.meridianStyle = this.prepareMeridianStyle(props, state);
+				props.meridianInputStyle = this.prepareMeridianInputStyle(props, state);
 			}
 		},
 
-		prepareMeridianStyle: function(props, state) {
-			return this.normalize(assign({}, props.defaultBoxStyle, props.defaultMeridianStyle, props.boxStyle, props.meridianStyle))
+		prepareMeridianStyle: function prepareMeridianStyle(props, state) {
+			return this.normalize(assign({}, props.defaultBoxStyle, props.defaultMeridianStyle, props.boxStyle, props.meridianStyle));
 		},
 
-		prepareMeridianInputStyle: function(props, state) {
-			return this.normalize(assign({}, props.defaultInputStyle, props.defaultMeridianInputStyle, props.inputStyle, props.meridianInputStyle))
+		prepareMeridianInputStyle: function prepareMeridianInputStyle(props, state) {
+			return this.normalize(assign({}, props.defaultInputStyle, props.defaultMeridianInputStyle, props.inputStyle, props.meridianInputStyle));
 		}
-	})
-
+	});
 
 /***/ }),
 /* 1 */
