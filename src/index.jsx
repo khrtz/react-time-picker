@@ -15,11 +15,11 @@ function identity(v){ return v }
 function emptyFn(){}
 
 const WHITESPACE = '\u00a0'
-
 export default class TimePicker extends React.Component {
 
 	constructor(props) {
 		super(props);
+		this.isMouseEnter = false;
 		this.state = {
 			defaultValue: this.props.defaultValue,
 			focused: {
@@ -75,6 +75,7 @@ export default class TimePicker extends React.Component {
 
 	onArrowMouseEnter(props, dir, name, event) {
 		let overArrow = this.state.overArrow
+		this.isMouseEnter = true;
 
 		Object.keys(overArrow).forEach(function(key){
 			overArrow[key] = null
@@ -86,6 +87,7 @@ export default class TimePicker extends React.Component {
 	}
 
 	onArrowMouseLeave(props, dir, name, event) {
+		this.isMouseEnter = false;
 		this.state.overArrow[name] = null
 
 		this.setState({})
@@ -108,10 +110,10 @@ export default class TimePicker extends React.Component {
 		const eventName = hasTouch?
 							'touchend':
 							'click'
-
+		
 		target.addEventListener(eventName, this.onWindowClick.bind(this))
 
-		this.onArrowAction(props, dir, name)
+		this.onArrowAction(props, dir, name);
 
 		this.timeoutId = setTimeout(function(){
 			this.startInterval(props, dir, name)
@@ -151,6 +153,10 @@ export default class TimePicker extends React.Component {
 	}
 
 	onArrowAction(props, dir, name) {
+		// Ignored if the mouse is out of the arrow button.
+		if (!this.isMouseEnter) {
+			return;
+		}
 		const dirName = dir == 1? 'Up': 'Down'
 		let methodName = 'onArrow' + dirName + toUpperFirst(name) + 'Action'
 
@@ -272,7 +278,7 @@ export default class TimePicker extends React.Component {
 				style    : arrowUpStyle,
 				children : '▲'
 			}
-
+			// const isMouseEnter = this.state.onMouseEnter;
 			arrowUpProps[EVENT_NAMES.onMouseDown] = this.onArrowMouseDown.bind(this, props, 1, name)
 			arrowUpProps.onMouseEnter = this.onArrowMouseEnter.bind(this, props, 1, name)
 			arrowUpProps.onMouseLeave = this.onArrowMouseLeave.bind(this, props, 1, name)
