@@ -76,6 +76,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var getFormatInfo = __webpack_require__(33)
 	var format        = __webpack_require__(34)
 	var formatTime    = __webpack_require__(35)
+	var isMouseEnter = false;
 
 	function identity(v){ return v }
 
@@ -239,6 +240,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		onArrowMouseEnter: function(props, dir, name, event) {
 			var overArrow = this.state.overArrow
+			this.isMouseEnter = true;
 
 			Object.keys(overArrow).forEach(function(key){
 				overArrow[key] = null
@@ -250,6 +252,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		},
 
 		onArrowMouseLeave: function(props, dir, name, event) {
+			this.isMouseEnter = false;
 			this.state.overArrow[name] = null
 
 			this.setState({})
@@ -315,6 +318,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		},
 
 		onArrowAction: function(props, dir, name) {
+			// Ignored if the mouse is out of the arrow button.
+			if (!this.isMouseEnter) {
+				return;
+			}
 
 			var dirName = dir == 1? 'Up': 'Down'
 			var methodName = 'onArrow' + dirName + toUpperFirst(name) + 'Action'
