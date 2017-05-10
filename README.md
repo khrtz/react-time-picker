@@ -6,12 +6,8 @@
 
 
 ```sh
-$ npm install react-time-picker --save
+$ npm install @khrtz/react-time-picker --save
 ```
-
-## Demo
-
-See [time picker demo](http://zippyui.github.io/react-time-picker/)
 
 ## Usage
 
