@@ -1,5 +1,5 @@
 {
-  "name": "react-time-picker",
+  "name": "@khrtz/react-time-picker",
   "version": "1.0.6",
   "description": "React Time Picker",
   "main": "lib/index.js",
