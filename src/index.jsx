@@ -75,6 +75,7 @@ export default class TimePicker extends React.Component {
 
 	onArrowMouseEnter(props, dir, name, event) {
 		let overArrow = this.state.overArrow
+		this.isMouseEnter = true;
 
 		Object.keys(overArrow).forEach(function(key){
 			overArrow[key] = null
@@ -86,6 +87,7 @@ export default class TimePicker extends React.Component {
 	}
 
 	onArrowMouseLeave(props, dir, name, event) {
+		this.isMouseEnter = false;
 		this.state.overArrow[name] = null
 
 		this.setState({})
@@ -97,9 +99,9 @@ export default class TimePicker extends React.Component {
 			return;
 		}
 
-		if (name == 'meridian'){
-			this.onArrowMeridianAction(props, dir, name)
-			return
+		if (name === 'meridian') {
+			this.onArrowMeridianAction(props, dir, name);
+			return;
 		}
 
 		const target = hasTouch?
@@ -147,10 +149,14 @@ export default class TimePicker extends React.Component {
 							:
 							currentMeridian == 'AM'? 'PM': 'AM'
 
-		this.updateValue(name, newValue)
+		this.updateValue(name, newValue);
 	}
 
 	onArrowAction(props, dir, name) {
+		// Ignored if the mouse is out of the arrow button.
+		if (!this.isMouseEnter) {
+			return;
+		}
 		const dirName = dir == 1? 'Up': 'Down'
 		let methodName = 'onArrow' + dirName + toUpperFirst(name) + 'Action'
 

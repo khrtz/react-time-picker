@@ -201,6 +201,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			key: 'onArrowMouseEnter',
 			value: function onArrowMouseEnter(props, dir, name, event) {
 				var overArrow = this.state.overArrow;
+				this.isMouseEnter = true;
 
 				Object.keys(overArrow).forEach(function (key) {
 					overArrow[key] = null;
@@ -213,6 +214,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: 'onArrowMouseLeave',
 			value: function onArrowMouseLeave(props, dir, name, event) {
+				this.isMouseEnter = false;
 				this.state.overArrow[name] = null;
 
 				this.setState({});
@@ -225,7 +227,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					return;
 				}
 
-				if (name == 'meridian') {
+				if (name === 'meridian') {
 					this.onArrowMeridianAction(props, dir, name);
 					return;
 				}
@@ -278,6 +280,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: 'onArrowAction',
 			value: function onArrowAction(props, dir, name) {
+				// Ignored if the mouse is out of the arrow button.
+				if (!this.isMouseEnter) {
+					return;
+				}
 				var dirName = dir == 1 ? 'Up' : 'Down';
 				var methodName = 'onArrow' + dirName + (0, _toUpperFirst2.default)(name) + 'Action';
 

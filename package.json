@@ -1,6 +1,6 @@
 {
-  "name": "react-time-picker",
-  "version": "1.0.5",
+  "name": "@khrtz/react-time-picker",
+  "version": "1.0.7",
   "description": "React Time Picker",
   "main": "lib/index.js",
   "scripts": {
@@ -33,11 +33,11 @@
     "webpack-dev-server": "^1.6.6"
   },
   "dependencies": {
-    "react": "15.x",
-    "react-dom": "^15.5.4",
     "has-touch": "^1.0.1",
     "object-assign": "^2.0.0",
     "parse-time": "^0.1.1",
+    "react": "0.14.9",
+    "react-dom": "0.14.9",
     "react-event-names": "^1.0.0",
     "react-style-normalizer": "^1.2.0"
   },
@@ -46,7 +46,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zippyui/react-time-picker.git"
+    "url": "https://github.com/khrtz/react-time-picker.git"
   },
   "keywords": [
     "time",
@@ -55,13 +55,13 @@
     "react",
     "react-component"
   ],
-  "author": "ZippyUI <contact@zippyui.com>",
+  "author": "Kohei Ito <garula.oze498@gmail.com>",
   "contributors": [
     "Radu Brehar <radu@evanghelic.ro>"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/zippyui/react-time-picker/issues"
+    "url": "https://github.com/khrtz/react-time-picker/issues"
   },
-  "homepage": "https://github.com/zippyui/react-time-picker"
+  "homepage": "https://github.com/khrtz/react-time-picker"
 }
